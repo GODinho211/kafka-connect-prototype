@@ -29,8 +29,7 @@ services:
       - kafka-net
 
   kafka-connect:
-    build:
-      context: ./connect
+    image: confluentinc/cp-kafka-connect
     container_name: kafka-connect
     depends_on:
       - kafka
@@ -53,10 +52,33 @@ services:
       CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
       CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
       CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
-      CONNECT_PLUGIN_PATH: /usr/share/java
+      CONNECT_PLUGIN_PATH: /usr/share/java,/usr/share/confluent-hub-components,/plugins
+      CLASSPATH: "/plugins/*:plugins/*/lib/*;/usr/share/java/kafka-connect-jdbc/*"
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
+    volumes:
+    - ./connect/plugins:/plugins
     networks:
       - kafka-net
+
+  postgres:
+    image: library/postgres
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Quintero10
+      POSTGRES_DB: kafka_connect_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./initdb/:/docker-entrypoint-initdb.d
+    networks:
+      - kafka-net
+
+volumes:
+  pgdata:
+
+    
 
 networks:
   kafka-net:

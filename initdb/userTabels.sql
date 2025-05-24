@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS clientes (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS pedidos (
+    id SERIAL PRIMARY KEY,
+    cliente_id INTEGER REFERENCES clientes(id),
+    valor DECIMAL(10, 2),
+    data_pedido DATE
+);
